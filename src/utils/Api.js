@@ -45,21 +45,40 @@ class API {
   return this._makeRequest(promise)
   }
 //---------------------Добавление лайков на карточку
-  addLikes(cardId) {
-    const promise = fetch(`${this._baseUrl}cards/${cardId}/likes`, {
-      method: 'PUT',
-      headers: this._headers
-    })
-    return this._makeRequest(promise)
-  }
+  // addLikes(cardId) {
+  //   const promise = fetch(`${this._baseUrl}cards/${cardId}/likes`, {
+  //     method: 'PUT',
+  //     headers: this._headers
+  //   })
+  //   return this._makeRequest(promise)
+  // }
 //----------------------Удаление лайков на карточку
-  deleteLikes(cardId) {
-    const promise = fetch(`${this._baseUrl}cards/${cardId}/likes`, {
-      method: 'DELETE',
-      headers: this._headers
-    })
-    return this._makeRequest(promise)
+  // deleteLikes(cardId) {
+  //   const promise = fetch(`${this._baseUrl}cards/${cardId}/likes`, {
+  //     method: 'DELETE',
+  //     headers: this._headers
+  //   })
+  //   return this._makeRequest(promise)
+  // }
+//изменение статуса лайка карточки
+  changeLikeCardStatus(cardId, isLiked) {
+    if (isLiked) {
+      const promise = fetch(`${this._baseUrl}cards/${cardId}/likes`, {
+        method: 'DELETE',
+        headers: this._headers
+      })
+      return this._makeRequest(promise)
+    } else {
+      const promise = fetch(`${this._baseUrl}cards/${cardId}/likes`, {
+        method: 'PUT',
+        headers: this._headers
+      })
+      return this._makeRequest(promise)
+    }
   }
+
+
+
 //---------------------Удаление карточки
   deleteCard(cardId) {
     const promise = fetch(`${this._baseUrl}cards/${cardId}`, {

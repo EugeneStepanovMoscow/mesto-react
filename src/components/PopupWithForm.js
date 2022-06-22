@@ -5,9 +5,10 @@ function PopupWithForm({
   title,
   children,
   isOpen,
-  onClose
-}) {
+  onClose,
+  onSubmit})
 
+  {
   return (
     <div className={`popup ${isOpen ? 'popup_opened' : ''}`} id={`popup${name}`}>
       <div className="popup__container">
@@ -16,6 +17,7 @@ function PopupWithForm({
           className="popup__form"
           name={`popup${name}`}
           id={`popup${name}`}
+          onSubmit={onSubmit}
         //novalidate
         >
           <fieldset className="popup__fieldset">

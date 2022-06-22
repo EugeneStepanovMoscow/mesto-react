@@ -1,44 +1,22 @@
 import React from 'react';
-import api from '../utils/Api';
 import penImg from '../images/Pen.svg'
 import plusImg from '../images/Plus.svg'
 import Card from './Card';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onClick }) {
-  const [userName, setUserName] = React.useState('Имя')
-  const [userDescription, setUserDescription] = React.useState('Профессия')
-  const [userAvatar, setUserAvatar] = React.useState('../images/Cousto.jpg')
-  const [cards, setCards] = React.useState([])
+function Main({
+  onEditProfile,
+  onAddPlace,
+  onEditAvatar,
+  onClick,
+  cards,
+  onCardLike,
+  onCardDelete
+  })
+  {
 
-
-  //Запрос данных пользователя с сервера
-  React.useEffect(() => {
-    api.getPersonInfo()
-      .then(res => {
-        setUserName(res.name)
-        setUserDescription(res.about)
-        setUserAvatar(res.avatar)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }, [])
-  //Запрос данных карточек
-  React.useEffect(() => {
-    api.getCards()
-      .then(res => {
-        setCards(res.map(card => ({
-          id: card._id,
-          name: card.name,
-          link: card.link,
-          likes: card.likes.length
-        })))
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }, [])
-
+  //подписка на контекст
+  const currentUser = React.useContext(CurrentUserContext)
 
   return (
     <main className="content">
@@ -46,18 +24,18 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onClick }) {
         <div className="profile__person">
           {/* Аватар пользователя */}
           <div className="profile__avatar">
-            <img className="profile__image" src={userAvatar} alt="Аватар" />
+            <img className="profile__image" src={currentUser.avatar} alt="Аватар" />
             <button className="profile__avatar-btn-edit" type="button" onClick={onEditAvatar}>
               <img className="profile__avatar-btn-edit-img" src={penImg} alt="Карандаш" />
             </button>
           </div>
           {/* информация о пользователе */}
           <div className="profile__info">
-            <h1 className="profile__person-name">{userName}</h1>
+            <h1 className="profile__person-name">{currentUser.name}</h1>
             <button className="profile__btn-edit" type="button" onClick={onEditProfile}>
               <img className="profile__btn-edit-img" src={penImg} alt="Карандаш" />
             </button>
-            <p className="profile__person-description">{userDescription}</p>
+            <p className="profile__person-description">{currentUser.about}</p>
           </div>
         </div>
         {/* кнопка добавления места */}
@@ -68,13 +46,17 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onClick }) {
       <section className="places">
         {/* Контейнер для карточек */}
         <ul className="places__table">
-          {cards.map(({ id, name, link, likes }) =>
+          {cards.map(({ id, ownerId, name, link, likes }) =>
             <Card
               key={id}
+              id={id}
+              ownerId={ownerId}
               name={name}
               link={link}
               likes={likes}
               onCardClick={onClick}
+              onCardLike={onCardLike}
+              onCardDelete={onCardDelete}
             />)
           }
         </ul>
