@@ -23,14 +23,19 @@ function AddPlacePopup({
   function handleSubmit(event) {
     event.preventDefault()
     onAddPlace({name, link})
+  }
+
+  //очищение значений привязанных переменных инпутов при монтировании
+  React.useEffect(() => {
     setName('')
     setLink('')
-  }
+  }, [isOpen])
 
   return (
     <PopupWithForm
       name="PlaceAdd"
       title="Новое место"
+      buttonText="Добавить"
       children={
         <>
           <input
@@ -42,7 +47,7 @@ function AddPlacePopup({
             // minlength={2}
             // maxlength={30}
             required
-            value={name}
+            value={name || ''}
             onChange={handleNameChange}
           />
           <span className="popup__inp-errmsg inperr-name"></span>
@@ -54,11 +59,11 @@ function AddPlacePopup({
             placeholder="Ссылка на картинку"
             // minlength={3}
             required
-            value={link}
+            value={link || ''}
             onChange={handleLinkChange}
           />
           <span className="popup__inp-errmsg inperr-description"></span>
-          <button className="popup__btn-save" type="submit">Создать</button>           {/* popup__btn-save_blocked */}
+          {/* <button className="popup__btn-save" type="submit">Создать</button>           popup__btn-save_blocked */}
         </>
       }
       isOpen={isOpen}

@@ -3,6 +3,7 @@ import React from 'react';
 function PopupWithForm({
   name,
   title,
+  buttonText,
   children,
   isOpen,
   onClose,
@@ -22,6 +23,7 @@ function PopupWithForm({
         >
           <fieldset className="popup__fieldset">
             {children}
+            <button className="popup__btn-save" type="submit">{buttonText}</button>
           </fieldset>
         </form>
         <button className="popup__btn-close" id={`popup${name}BtnClose`} type="button" onClick={onClose}></button>

@@ -1,5 +1,6 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
+import { useRef } from "react";
 
 function EditAvatarPopup({
   isOpen,
@@ -7,7 +8,7 @@ function EditAvatarPopup({
   onUpdateAvatar})
   {
 
-  const avatarRef = React.createRef()
+  const avatarRef = useRef(null)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -19,6 +20,7 @@ function EditAvatarPopup({
     <PopupWithForm
       name="ProfileImgEdit"
       title="Обновить аватар"
+      buttonText="Сохранить"
       children={
         <>
           <input
@@ -32,7 +34,6 @@ function EditAvatarPopup({
             ref={avatarRef}
           />
           <span className="popup__inp-errmsg inperr-name popup__inp-errmsg_active"></span>
-          <button className="popup__btn-save" type="submit">Сохранить</button> {/*popup__btn-save_blocked */}
         </>
       }
       isOpen={isOpen}

@@ -12,9 +12,9 @@ import AddPlacePopup from './AddPlacePopup';
 
 
 function App() {
-  const [isEditProfilePopupOpen, setEditProfilePopupOpenStatus] = useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpenStatus] = useState(false);
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpenStatus] = useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null)
   const [currentUser, setCurrentUser] = useState({})
   //стейт переменная массива информации о карточках
@@ -23,21 +23,21 @@ function App() {
 
   // обработчик нажатия кнопки аватара
   function handleEditAvatarClick() {
-    setEditAvatarPopupOpenStatus(true)
+    setIsEditAvatarPopupOpen(true)
   }
   // обработчик нажатия кнопки редактирования профиля
   function handleEditProfileClick() {
-    setEditProfilePopupOpenStatus(true)
+    setIsEditProfilePopupOpen(true)
   }
   // обработчик нажатия кнопки добавления места
   function handleAddPlaceClick() {
-    setAddPlacePopupOpenStatus(true)
+    setIsAddPlacePopupOpen(true)
   }
   // обработчик попапов
   function closeAllPopups() {
-    setEditAvatarPopupOpenStatus(false)
-    setEditProfilePopupOpenStatus(false)
-    setAddPlacePopupOpenStatus(false)
+    setIsEditAvatarPopupOpen(false)
+    setIsEditProfilePopupOpen(false)
+    setIsAddPlacePopupOpen(false)
     setSelectedCard(null)
   }
   // обработчик клика на картинку
@@ -49,8 +49,11 @@ function App() {
     api.givePersonInfo(name, description) //отправляем изменения на сервер
       .then(res => {
         setCurrentUser(res) //ответ с сервера записываем в стейт переменную
+        closeAllPopups()
       })
-    closeAllPopups()
+      .catch(err => {
+        console.log(err)
+      })
   }
   //обработчик добавления карточки
   function handleAddPlace({name, link}) {
@@ -63,17 +66,24 @@ function App() {
           name: newCard.name,
           link: newCard.link,
           likes: newCard.likes
-        }, ...cards])
+          }, ...cards
+        ])
+        closeAllPopups()
       })
-      closeAllPopups()
+      .catch(err => {
+        console.log(err)
+      })
   }
   //обработчик изменения аватара
   function handleUpdateAvatar(avatarLink) {
     api.getAvatar(avatarLink)
       .then(res => {
         setCurrentUser(res)
+        closeAllPopups()
       })
-    closeAllPopups()
+      .catch(err => {
+        console.log(err)
+      })
   }
   //обработчик лайка карточки
   function handleCardLike(cardId, likes) {
@@ -88,14 +98,23 @@ function App() {
           ownerId: newCard.owner._id,
           name: newCard.name,
           link: newCard.link,
-          likes: newCard.likes} : oldCard))
+          likes: newCard.likes} : oldCard
+        ))
+        closeAllPopups()
+      })
+      .catch(err => {
+        console.log(err)
       })
   }
   //обработчик удаления карточки
   function handleCardDelete(cardId) {
     api.deleteCard(cardId)
       .then(() => {
-        setCards(cards.filter(card => card.id !== cardId)) //не включаем в стейт переменную карточку с удаленным Id
+        setCards((state) => state.filter((c) => c.id !== cardId ))
+        // setCards(cards.filter(card => card.id !== cardId)) //не включаем в стейт переменную карточку с удаленным Id
+      })
+      .catch(err => {
+        console.log(err)
       })
   }
 
@@ -127,9 +146,6 @@ function App() {
         console.log(err)
       })
     }, [])
-
-
-
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -171,7 +187,6 @@ function App() {
             card={selectedCard}
             onClose={closeAllPopups}
           />
-
         </section>
       </div>
     </CurrentUserContext.Provider>
