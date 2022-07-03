@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header'
-import Main from '../components/Main'
-import Footer from '../components/Footer'
-import ImagePopup from './ImagePopup'
+import { Route, Switch, Redirect, useHistory} from 'react-router-dom'
+
 import api from '../utils/Api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import ProtectedRoute from './ProtectedRoute';
+
+import Main from '../components/Main'
+import ImagePopup from './ImagePopup'
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
-
+import Login from './Login';
+import Register from './Register';
+import InfoTooltip from './InfoTooltip';
 
 
 function App() {
+  //стейт переменный состояния открытия попапов
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false)
+  //стейт переменна статуса попапа подсказки
+  const [infoTooltipStatus, setInfoTooltioStatus] = useState(true)
+
   const [selectedCard, setSelectedCard] = useState(null)
   const [currentUser, setCurrentUser] = useState({})
+  const [userEmail, setUserEmail] = useState('')
   //стейт переменная массива информации о карточках
   const [cards, setCards] = React.useState([])
+  //стейт переменная статуса входа пользавателя в систему
+  const [loggedIn, setloggedIn] = React.useState(false)
+  const [error, setError] = useState('')
+
+  const history = useHistory()
 
 
   // обработчик нажатия кнопки аватара
@@ -38,6 +53,7 @@ function App() {
     setIsEditAvatarPopupOpen(false)
     setIsEditProfilePopupOpen(false)
     setIsAddPlacePopupOpen(false)
+    setIsInfoTooltipOpen(false)
     setSelectedCard(null)
   }
   // обработчик клика на картинку
@@ -117,6 +133,68 @@ function App() {
         console.log(err)
       })
   }
+  //функция входа
+  function handleLogin(email, password) {
+    api.login(password, email)
+      .then((res) => {
+        if (!res) {
+          return setError(`Ошибка запроса входа`)
+        } else {
+          setUserEmail(email)
+          setloggedIn(true)
+          history.push('/main')
+          localStorage.setItem('jwt', res.token)
+        }
+      })
+      .catch(err => {
+        setInfoTooltioStatus(false)
+        setIsInfoTooltipOpen(true)
+        console.log(err)
+      })
+  }
+  //проверка токена
+  function handleLoginStart() {
+    if (localStorage.jwt) {
+      api.jwtCheck(localStorage.jwt)
+        .then((res) => {
+          setUserEmail(res.data.email)
+          setloggedIn(true)
+          history.push('/main')
+          console.log('вход через сохраненный токен')
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }
+
+
+  //функция регистарции пользователя на сервере
+  function handleRegister(email, password) {
+    api.register(password, email)
+      .then((res) => {
+        if (res.statusCode === 400) {
+          setInfoTooltioStatus(false)
+          setIsInfoTooltipOpen(true)
+        } else {
+          //действия при успешной регистрации
+          setInfoTooltioStatus(true)
+          setIsInfoTooltipOpen(true)
+          history.push('/login')
+        }
+      })
+      .catch(err => {
+        setInfoTooltioStatus(false)
+        setIsInfoTooltipOpen(true)
+        console.log(err)
+      })
+  }
+  //функция выхода пользователя
+  function handleLogOut() {
+    setloggedIn(false)
+    localStorage.removeItem('jwt')
+    history.push('/login')
+  }
 
   //Запрос данных пользователя с сервера при старте
   useEffect(() => {
@@ -149,9 +227,12 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <div>
-        <Header />
-        <Main
+      <Switch>
+        <ProtectedRoute
+          path="/main"
+          loggedIn={loggedIn}
+          component={Main}
+          //пропсы для Main
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
@@ -159,8 +240,24 @@ function App() {
           cards={cards}
           onCardLike={handleCardLike}
           onCardDelete={handleCardDelete}
+          onExit={handleLogOut}
+          email={userEmail}
         />
-        <Footer />
+        <Route path="/login">
+          <Login
+            onLogin={handleLogin}
+            onStart={handleLoginStart}
+          />
+        </Route>
+        <Route path="/register">
+          <Register
+            onRegister={handleRegister}
+          />
+        </Route>
+        <Route exact path="/">
+          {loggedIn ? <Redirect to="/main"/> : <Redirect to="/login"/>}
+        </Route>
+      </Switch>
 
         <section className="popups">
           {/*попап редактирования аватара*/}
@@ -187,8 +284,16 @@ function App() {
             card={selectedCard}
             onClose={closeAllPopups}
           />
+          <InfoTooltip
+            isOpen={isInfoTooltipOpen}
+            onClose={closeAllPopups}
+            status={infoTooltipStatus}
+          />
         </section>
-      </div>
+        {/* <Route exact path="/">
+          <Pattern/>
+        </Route> */}
+
     </CurrentUserContext.Provider>
   );
 }

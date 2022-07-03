@@ -1,5 +1,7 @@
 /* проверить скролл на мылых разрешениях. (ширина) */
 .header {
+  display: flex;
+  justify-content: space-between;
   width: 880px;
   min-height: 74px;
   margin: 0 auto;

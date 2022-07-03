@@ -2,6 +2,8 @@ import React from 'react';
 import penImg from '../images/Pen.svg'
 import plusImg from '../images/Plus.svg'
 import Card from './Card';
+import Header from './Header';
+import Footer from './Footer';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function Main({
@@ -11,7 +13,9 @@ function Main({
   onClick,
   cards,
   onCardLike,
-  onCardDelete
+  onCardDelete,
+  onExit,
+  email
   })
   {
 
@@ -19,6 +23,14 @@ function Main({
   const currentUser = React.useContext(CurrentUserContext)
 
   return (
+    <>
+    <Header
+      headerButtonText={'Выход'}
+      userEmail={email}
+      headerLink={'/login'}
+      onExit={onExit}
+      email={email}
+    />
     <main className="content">
       <section className="profile">
         <div className="profile__person">
@@ -62,6 +74,8 @@ function Main({
         </ul>
       </section>
     </main>
+    <Footer/>
+    </>
   )
 }
 

@@ -1,7 +1,8 @@
 
 class API {
-  constructor(url, headers) {
+  constructor(url, regUrl, headers) {
     this._baseUrl = url;
+    this._baseRegUrl = regUrl;
     this._headers = headers;
   }
   _makeRequest(promise) {
@@ -110,9 +111,46 @@ class API {
     })
     return this._makeRequest(promise)
   }
+  //запрос на регистрацию нового пользователя на сайт
+  register(password, email) {
+    const promise = fetch(`${this._baseRegUrl}/signup`, {
+      method: 'POST',
+      headers: this._headers,
+      body: JSON.stringify({
+        password: password,
+        email: email
+      })
+    })
+    return this._makeRequest(promise)
+  }
+  //запрос на вход, получение токена
+  login(password, email) {
+    const promise = fetch(`${this._baseRegUrl}/signin`, {
+      method: 'POST',
+      headers: this._headers,
+      body: JSON.stringify({
+        password: password,
+        email: email
+      })
+    })
+    return this._makeRequest(promise)
+  }
+  //запрос проверки токена
+  jwtCheck(jwt) {
+    const promise = fetch(`${this._baseRegUrl}/users/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      }
+    })
+    return this._makeRequest(promise)
+  }
+
+
 }
 
-const api = new API('https://mesto.nomoreparties.co/v1/cohort-40/', {
+const api = new API('https://mesto.nomoreparties.co/v1/cohort-40/', 'https://auth.nomoreparties.co', {
   'Accept': 'application/json',
   'Content-Type': 'application/json; charset=utf-8',
   'authorization': '8979c03d-d651-4578-8bdf-d2973cc4dde5'
