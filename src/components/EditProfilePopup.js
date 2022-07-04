@@ -17,8 +17,6 @@ function EditProfilePopup({
   React.useEffect(() =>{
     setName(currentUser.name)
     setDescription(currentUser.about)
-    setName('')
-    setDescription('')
   }, [currentUser, isOpen])
 
   //обработчик инпута имя
