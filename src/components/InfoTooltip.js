@@ -36,9 +36,6 @@ function InfoTooltip({
        </div>
     )
   }
-
-
-
 }
 
 export default InfoTooltip

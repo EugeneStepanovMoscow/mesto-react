@@ -42,10 +42,7 @@ function AddPlacePopup({
             className="popup__inp"
             name="name"
             type="text"
-            // defaultValue=""
             placeholder="Название"
-            // minlength={2}
-            // maxlength={30}
             required
             value={name || ''}
             onChange={handleNameChange}
@@ -55,15 +52,12 @@ function AddPlacePopup({
             className="popup__inp"
             name="description"
             type="url"
-            // defaultValue=""
             placeholder="Ссылка на картинку"
-            // minlength={3}
             required
             value={link || ''}
             onChange={handleLinkChange}
           />
           <span className="popup__inp-errmsg inperr-description"></span>
-          {/* <button className="popup__btn-save" type="submit">Создать</button>           popup__btn-save_blocked */}
         </>
       }
       isOpen={isOpen}

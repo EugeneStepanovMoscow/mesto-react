@@ -15,6 +15,9 @@ function EditAvatarPopup({
     onUpdateAvatar(avatarRef.current.value)
   }
 
+  React.useEffect(() =>{
+    avatarRef.current.value = ''
+  }, [isOpen])
 
   return (
     <PopupWithForm
@@ -29,7 +32,6 @@ function EditAvatarPopup({
             type="url"
             defaultValue=""
             placeholder="Ссылка на картинку"
-            // minlength={3}
             required
             ref={avatarRef}
           />

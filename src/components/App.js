@@ -31,7 +31,6 @@ function App() {
   const [cards, setCards] = React.useState([])
   //стейт переменная статуса входа пользавателя в систему
   const [loggedIn, setloggedIn] = React.useState(false)
-  const [error, setError] = useState('')
 
   const history = useHistory()
 
@@ -108,7 +107,6 @@ function App() {
     // Отправляем запрос в API и получаем обновлённые данные карточк и меняем в стейт
     api.changeLikeCardStatus(cardId, isLiked)
       .then((newCard) => {
-        // debugger
         setCards(cards.map((oldCard) => oldCard.id === cardId ? {
           id: newCard._id,
           ownerId: newCard.owner._id,
@@ -127,7 +125,6 @@ function App() {
     api.deleteCard(cardId)
       .then(() => {
         setCards((state) => state.filter((c) => c.id !== cardId ))
-        // setCards(cards.filter(card => card.id !== cardId)) //не включаем в стейт переменную карточку с удаленным Id
       })
       .catch(err => {
         console.log(err)
@@ -138,7 +135,7 @@ function App() {
     api.login(password, email)
       .then((res) => {
         if (!res) {
-          return setError(`Ошибка запроса входа`)
+          console.log(`Ошибка запроса входа`)
         } else {
           setUserEmail(email)
           setloggedIn(true)
@@ -160,14 +157,12 @@ function App() {
           setUserEmail(res.data.email)
           setloggedIn(true)
           history.push('/main')
-          console.log('вход через сохраненный токен')
         })
         .catch(err => {
           console.log(err)
         })
     }
   }
-
 
   //функция регистарции пользователя на сервере
   function handleRegister(email, password) {
@@ -207,7 +202,6 @@ function App() {
       })
   }, [])
 
-
   //Запрос данных карточек с сервера с записью в массив cards при старте
   React.useEffect(() => {
     api.getCards()
@@ -232,7 +226,6 @@ function App() {
           path="/main"
           loggedIn={loggedIn}
           component={Main}
-          //пропсы для Main
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
@@ -290,10 +283,6 @@ function App() {
             status={infoTooltipStatus}
           />
         </section>
-        {/* <Route exact path="/">
-          <Pattern/>
-        </Route> */}
-
     </CurrentUserContext.Provider>
   );
 }

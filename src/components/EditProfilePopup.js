@@ -17,6 +17,8 @@ function EditProfilePopup({
   React.useEffect(() =>{
     setName(currentUser.name)
     setDescription(currentUser.about)
+    setName('')
+    setDescription('')
   }, [currentUser, isOpen])
 
   //обработчик инпута имя
@@ -48,7 +50,6 @@ function EditProfilePopup({
             className="popup__inp"
             name="name"
             type="text"
-            // defaultValue=""
             placeholder="Введите имя"
             required
             value={name || ''}
@@ -59,7 +60,6 @@ function EditProfilePopup({
             className="popup__inp"
             name="description"
             type="text"
-            // defaultValue=""
             placeholder="Укажите профессию"
             required
             value={description || ''}

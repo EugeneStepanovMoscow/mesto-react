@@ -29,8 +29,6 @@ function Login ({
     onLogin(logState.email, logState.password)
   }
 
-
-
   return (
     <>
       <Header

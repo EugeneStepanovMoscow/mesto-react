@@ -19,7 +19,6 @@ function PopupWithForm({
           name={`popup${name}`}
           id={`popup${name}`}
           onSubmit={onSubmit}
-        //novalidate
         >
           <fieldset className="popup__fieldset">
             {children}
