@@ -16,11 +16,10 @@ function Card({
   const currentUser = React.useContext(CurrentUserContext)
   // проверка на создателя карточки
   const isOwn = ownerId === currentUser._id;
-
   //переменная класса кнопки удаления карточки
   const cardDeleteButtonClassName = (`place__btn-delit ${isOwn ? '' : 'place__btn-delit_off'}`);
   //проверка на лайк карточки пользователем
-  const isLiked = likes.some(i => i._id === currentUser._id)
+  const isLiked = likes.some(elm => elm === currentUser._id)
   //переменная класса значка лайка
   const cardLikeButtonClassName = (`place__btn-like ${isLiked ? 'place__btn-like_active' : ''}`)
 

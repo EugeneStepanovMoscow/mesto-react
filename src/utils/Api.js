@@ -1,4 +1,3 @@
-
 class API {
   constructor(url, regUrl, headers) {
     this._baseUrl = url;
@@ -77,8 +76,6 @@ class API {
     }
   }
 
-
-
 //---------------------Удаление карточки
   deleteCard(cardId) {
     const promise = fetch(`${this._baseUrl}cards/${cardId}`, {
@@ -113,7 +110,7 @@ class API {
   }
   //запрос на регистрацию нового пользователя на сайт
   register(password, email) {
-    const promise = fetch(`${this._baseRegUrl}/signup`, {
+    const promise = fetch(`${this._baseRegUrl}signup`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -125,7 +122,8 @@ class API {
   }
   //запрос на вход, получение токена
   login(password, email) {
-    const promise = fetch(`${this._baseRegUrl}/signin`, {
+    // const promise = fetch(`${this._baseRegUrl}/signin`, {
+    const promise = fetch(`${this._baseUrl}signin`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -137,11 +135,12 @@ class API {
   }
   //запрос проверки токена
   jwtCheck(jwt) {
-    const promise = fetch(`${this._baseRegUrl}/users/me`, {
+    const promise = fetch(`${this._baseUrl}users/me`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
+        //'Authorization': `Bearer ${jwt}`
+        'authorization': jwt,
       }
     })
     return this._makeRequest(promise)
@@ -149,11 +148,13 @@ class API {
 
 
 }
-
-const api = new API('https://mesto.nomoreparties.co/v1/cohort-40/', 'https://auth.nomoreparties.co', {
+// const api = new API('https://mesto.nomoreparties.co/v1/cohort-40/', 'https://auth.nomoreparties.co', {
+//  http://api.steugene.nomoredomains.sbs:3000/
+//  http://localhost:3000/
+const api = new API('http://localhost:3000/', 'http://localhost:3000/', {
   'Accept': 'application/json',
   'Content-Type': 'application/json; charset=utf-8',
-  'authorization': '8979c03d-d651-4578-8bdf-d2973cc4dde5'
+  'authorization': localStorage.jwt
 })
 
 export default api

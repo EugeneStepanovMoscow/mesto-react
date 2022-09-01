@@ -34,7 +34,6 @@ function App() {
 
   const history = useHistory()
 
-
   // обработчик нажатия кнопки аватара
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true)
@@ -65,6 +64,7 @@ function App() {
       .then(res => {
         setCurrentUser(res) //ответ с сервера записываем в стейт переменную
         closeAllPopups()
+        window.location.reload()
       })
       .catch(err => {
         console.log(err)
@@ -74,10 +74,11 @@ function App() {
   function handleAddPlace({name, link}) {
     api.sendCard(name, link) //отправляем изменения на сервер
       .then(newCard => {
+        console.log(newCard)
         setCards([{
           //приведение ключей объекта карточки к стандартному виду
           id: newCard._id,
-          ownerId: newCard.owner._id,
+          ownerId: newCard.owner,
           name: newCard.name,
           link: newCard.link,
           likes: newCard.likes
@@ -102,14 +103,15 @@ function App() {
   }
   //обработчик лайка карточки
   function handleCardLike(cardId, likes) {
-    // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = likes.some(i => i._id === currentUser._id)
+    // проверяем, есть ли уже лайк на этой карточке
+    const isLiked = likes.some(elm => elm === currentUser._id)
     // Отправляем запрос в API и получаем обновлённые данные карточк и меняем в стейт
     api.changeLikeCardStatus(cardId, isLiked)
       .then((newCard) => {
+        //debugger
         setCards(cards.map((oldCard) => oldCard.id === cardId ? {
           id: newCard._id,
-          ownerId: newCard.owner._id,
+          ownerId: newCard.owner,
           name: newCard.name,
           link: newCard.link,
           likes: newCard.likes} : oldCard
@@ -120,6 +122,7 @@ function App() {
         console.log(err)
       })
   }
+
   //обработчик удаления карточки
   function handleCardDelete(cardId) {
     api.deleteCard(cardId)
@@ -130,6 +133,7 @@ function App() {
         console.log(err)
       })
   }
+
   //функция входа
   function handleLogin(email, password) {
     api.login(password, email)
@@ -139,8 +143,9 @@ function App() {
         } else {
           setUserEmail(email)
           setloggedIn(true)
-          history.push('/main')
           localStorage.setItem('jwt', res.token)
+          history.push('/main')
+          window.location.reload()
         }
       })
       .catch(err => {
@@ -154,7 +159,7 @@ function App() {
     if (localStorage.jwt) {
       api.jwtCheck(localStorage.jwt)
         .then((res) => {
-          setUserEmail(res.data.email)
+          setUserEmail(res.email)
           setloggedIn(true)
           history.push('/main')
         })
@@ -203,21 +208,20 @@ function App() {
   }, [])
 
   //Запрос данных карточек с сервера с записью в массив cards при старте
-  React.useEffect(() => {
+  useEffect(() => {
     api.getCards()
       .then(res => {
         setCards(res.map(card => ({
           id: card._id,
-          ownerId: card.owner._id,
+          ownerId: card.owner,
           name: card.name,
           link: card.link,
           likes: card.likes})))
-
       })
       .catch(err => {
         console.log(err)
       })
-    }, [])
+  }, [])
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -236,6 +240,7 @@ function App() {
           onExit={handleLogOut}
           email={userEmail}
         />
+
         <Route path="/login">
           <Login
             onLogin={handleLogin}
